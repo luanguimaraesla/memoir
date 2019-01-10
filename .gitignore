@@ -1,0 +1,6 @@
+# ignore editor files
+*.swo
+*.swp
+
+# ignore go dep vendor
+vendor/
