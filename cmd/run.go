@@ -16,7 +16,6 @@ package cmd
 
 import (
         "log"
-        "os"
         "time"
         "strconv"
 
@@ -36,7 +35,23 @@ messages on Telegram, RocketChat, Discord or Slack.`,
 }
 
 func runServer(cmd *cobra.Command, args []string){
-        bot, err := tbot.NewServer(os.Getenv("TELEGRAM_TOKEN"))
+        switch agent, _ := cmd.Flags().GetString("agent"); agent {
+        case "telegram":
+                token, _ := cmd.Flags().GetString("token")
+                runTelegramServer(token)
+        case "rocketchat":
+                log.Fatal("Not implemented yet: %s", agent)
+        case "slack":
+                log.Fatal("Not implemented yet: %s", agent)
+        case "discord":
+                log.Fatal("Not implemented yet: %s", agent)
+        default:
+                log.Fatal("Invalid agent: %s", agent)
+        }
+}
+
+func runTelegramServer(token string){
+        bot, err := tbot.NewServer(token)
         if err != nil {
                 log.Fatal(err)
         }
@@ -70,4 +85,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+        runCmd.Flags().StringP("agent", "a", "telegram", "Chat tool you'll talk to bot")
+        runCmd.Flags().StringP("token", "t", "", "Chat token")
 }
