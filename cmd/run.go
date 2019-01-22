@@ -16,11 +16,11 @@ package cmd
 
 import (
         "log"
-        "time"
-        "strconv"
 
 	"github.com/spf13/cobra"
-        "github.com/yanzay/tbot"
+	"github.com/spf13/viper"
+        "github.com/luanguimaraesla/memoir/telegram"
+        "github.com/luanguimaraesla/memoir/question"
 )
 
 // runCmd represents the run command
@@ -35,10 +35,16 @@ messages on Telegram, RocketChat, Discord or Slack.`,
 }
 
 func runServer(cmd *cobra.Command, args []string){
+        var talk question.Talk
+        err := viper.Unmarshal(&talk)
+        if err != nil {
+                log.Panic("Unable to unmarshal config")
+        }
+
         switch agent, _ := cmd.Flags().GetString("agent"); agent {
         case "telegram":
                 token, _ := cmd.Flags().GetString("token")
-                runTelegramServer(token)
+                telegram.Run(&talk, token)
         case "rocketchat":
                 log.Fatal("Not implemented yet: %s", agent)
         case "slack":
@@ -50,29 +56,6 @@ func runServer(cmd *cobra.Command, args []string){
         }
 }
 
-func runTelegramServer(token string){
-        bot, err := tbot.NewServer(token)
-        if err != nil {
-                log.Fatal(err)
-        }
-        bot.Handle("/answer", "42")
-        bot.HandleFunc("/timer {seconds}", timeHandler)
-        bot.ListenAndServe()
-}
-
-func timeHandler(m *tbot.Message){
-        // m.Vars contains all variables, parsed during routing
-        secondsStr := m.Vars["seconds"]
-        // convert string variable to integer seconds value
-        seconds, err := strconv.Atoi(secondsStr)
-        if err != nil {
-                m.Reply("Invalid number of seconds")
-                return
-        }
-        m.Replyf("Timer for %d seconds started", seconds)
-        time.Sleep(time.Duration(seconds) * time.Second)
-        m.Reply("Timeout")
-}
 
 func init() {
 	rootCmd.AddCommand(runCmd)

@@ -4,3 +4,4 @@
 
 # ignore go dep vendor
 vendor/
+questions.yaml
