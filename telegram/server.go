@@ -6,22 +6,22 @@ import (
         "strconv"
 
         "github.com/yanzay/tbot"
-        "github.com/luanguimaraesla/memoir/question"
+        "github.com/luanguimaraesla/memoir/model"
 )
 
-var talk *question.Talk
+var talk *model.Talk
 
-func runTelegramServer(t *question.Talk, token string){
+func runTelegramServer(token string){
         bot, err := tbot.NewServer(token)
         if err != nil {
                 log.Fatal(err)
         }
-        bot.Handle("/answer", "42")
-        bot.HandleFunc("/questions {seconds}", timeHandler)
+        bot.Handle("answer", "42")
+        bot.HandleFunc("ask {seconds}", questionsHandler)
         bot.ListenAndServe()
 }
 
-func timeHandler(m *tbot.Message){
+func questionsHandler(m *tbot.Message){
         // m.Vars contains all variables, parsed during routing
         secondsStr := m.Vars["seconds"]
         // convert string variable to integer seconds value
@@ -38,7 +38,7 @@ func timeHandler(m *tbot.Message){
         m.Reply("This is all I have. :)")
 }
 
-func Run(t *question.Talk, token string){
+func Run(t *model.Talk, token string){
         talk = t
-        runTelegramServer(talk, token)
+        runTelegramServer(token)
 }
