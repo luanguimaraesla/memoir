@@ -30,7 +30,7 @@ required = [
 
 [[constraint]]
   name = "github.com/yanzay/tbot"
-  version = "0.4.0"
+  branch = "master"
 
 [prune]
   go-tests = true

@@ -43,7 +43,7 @@ func buildArgs(m *model.Measure) *pb.Measure {
 }
 
 func (c *collectorClient) SendMeasures() {
-        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
         defer cancel()
 
         stream, err := c.cc.AddMeasure(ctx)
