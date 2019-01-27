@@ -20,7 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
         "github.com/luanguimaraesla/memoir/telegram"
-        "github.com/luanguimaraesla/memoir/question"
+        "github.com/luanguimaraesla/memoir/model"
 )
 
 // runCmd represents the run command
@@ -35,7 +35,7 @@ messages on Telegram, RocketChat, Discord or Slack.`,
 }
 
 func runServer(cmd *cobra.Command, args []string){
-        var talk question.Talk
+        var talk model.Talk
         err := viper.Unmarshal(&talk)
         if err != nil {
                 log.Panic("Unable to unmarshal config")

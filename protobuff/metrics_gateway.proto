@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.examples.metricsgateway";
+option java_outer_classname = "MetricsGatewayProto";
+
+package metricsgateway;
+
+service MetricsGateway {
+  rpc AddMeasure (stream Measure) returns (GatewaySummary) {}
+}
+
+message Measure{
+  string name = 1;
+  float value = 2;
+
+  enum MetricType {
+    GAUGE = 0;
+    COUNTER = 1;
+    HISTOGRAM = 2;
+    SUMMARY = 3;
+  }
+
+  MetricType kind = 3;
+}
+
+message GatewaySummary {
+  int32 measure_count = 1;
+  int32 elapsed_time = 2;
+}

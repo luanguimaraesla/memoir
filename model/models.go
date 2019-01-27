@@ -1,4 +1,4 @@
-package question
+package model
 
 type Question struct {
         Text string
@@ -10,4 +10,9 @@ type Question struct {
 
 type Talk struct {
         Questions []Question
+}
+
+type Measure struct {
+        Reference *Question
+        Value float32
 }
