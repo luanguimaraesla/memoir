@@ -57,7 +57,7 @@ func ask(m *tbot.Message) chan *model.Measure {
                         gtc.callbackMutex.Lock()
                         m.Replyf("Saved value: %f", gtc.responseValue)
                         yield <- &model.Measure{
-                               Reference: &q,
+                               Reference: &gtc.talk.Questions[i],
                                Value: gtc.responseValue,
                         }
                         gtc.callbackMutex.Unlock()
