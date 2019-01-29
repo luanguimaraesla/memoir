@@ -42,6 +42,20 @@ func callbackValueHandler(m *tbot.Message) {
         gtc.callbackMutex.Unlock()
 }
 
+func getKeyboardOptions(ops []string) [][]string {
+        ncolumns := 3
+        nlines := len(ops) / ncolumns
+        if ncolumnsLastLine := len(ops) % ncolumns; ncolumnsLastLine != 0 {
+                nlines++
+        }
+        kb := make([][]string, nlines)
+        for i, o := range ops {
+                ii := i / ncolumns
+                kb[ii] = append(kb[ii], fmt.Sprintf("/%s", o))
+        }
+        return kb
+}
+
 func ask(m *tbot.Message) chan *model.Measure {
         yield := make(chan *model.Measure)
         go func() {
@@ -49,11 +63,12 @@ func ask(m *tbot.Message) chan *model.Measure {
                         gtc.callbackMutex.Lock()
                         text := fmt.Sprintf("%d. %s", i, q.Text)
 
-                        buttons := [][]string{
-                                {"/1", "/2", "/3"},
-                                {"/4", "/5", "/6"},
+                        if len(q.Options) > 0 {
+                                options := getKeyboardOptions(q.Options)
+                                m.ReplyKeyboard(text, options, tbot.OneTimeKeyboard)
+                        } else {
+                                m.Replyf("%s Type any float value prefixed by slash (e.g. /1.4)", text)
                         }
-                        m.ReplyKeyboard(text, buttons, tbot.OneTimeKeyboard)
                         gtc.callbackMutex.Lock()
                         m.Replyf("Saved value: %f", gtc.responseValue)
                         yield <- &model.Measure{

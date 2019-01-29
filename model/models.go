@@ -6,6 +6,7 @@ type Question struct {
         Group string
         Metric string
         Repeat string
+        Options []string
 }
 
 type Talk struct {
