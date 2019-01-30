@@ -16,6 +16,7 @@ type talkController struct {
         talk *model.Talk
         responseValue float32
         callbackMutex *sync.Mutex
+        exporterAddr string
 }
 
 var gtc *talkController
@@ -89,16 +90,17 @@ func askMascarade (m *tbot.Message) func() chan *model.Measure {
 }
 
 func questionsHandler(m *tbot.Message){
-        c := collectorclient.NewCollectorClient("localhost:50051", askMascarade(m))
+        c := collectorclient.NewCollectorClient(gtc.exporterAddr, askMascarade(m))
         defer c.Close()
         c.SendMeasures()
         m.Reply("This is all I have. :)")
 }
 
-func Run(t *model.Talk, token string){
+func Run(t *model.Talk, token string, exporterAddr string){
         gtc = &talkController{
                 talk: t,
                 callbackMutex: &sync.Mutex{},
+                exporterAddr: exporterAddr,
         }
         runTelegramServer(token)
 }

@@ -38,13 +38,18 @@ func runServer(cmd *cobra.Command, args []string){
         var talk model.Talk
         err := viper.Unmarshal(&talk)
         if err != nil {
-                log.Panic("Unable to unmarshal config")
+                log.Panic("unable to unmarshal config")
+        }
+
+        exporterAddr, err := cmd.Flags().GetString("exporter")
+        if err != nil {
+                log.Panic("you should configure an metrics exporter (--exporter)")
         }
 
         switch agent, _ := cmd.Flags().GetString("agent"); agent {
         case "telegram":
                 token, _ := cmd.Flags().GetString("token")
-                telegram.Run(&talk, token)
+                telegram.Run(&talk, token, exporterAddr)
         case "rocketchat":
                 log.Fatal("Not implemented yet: %s", agent)
         case "slack":
@@ -70,4 +75,5 @@ func init() {
 	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
         runCmd.Flags().StringP("agent", "a", "telegram", "Chat tool you'll talk to bot")
         runCmd.Flags().StringP("token", "t", "", "Chat token")
+        runCmd.Flags().StringP("exporter", "e", "", "Exporter address")
 }

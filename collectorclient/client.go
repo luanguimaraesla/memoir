@@ -36,7 +36,7 @@ var mmt = map[string]pb.Measure_Type{
 
 func buildArgs(m *model.Measure) *pb.Measure {
         return &pb.Measure{
-                Name: fmt.Sprintf("%s.%s", m.Reference.Group, m.Reference.Metric),
+                Name: fmt.Sprintf("%s_%s", m.Reference.Group, m.Reference.Metric),
                 Kind: mmt[strings.ToLower(m.Reference.Kind)],
                 Value: m.Value,
                 Help: m.Reference.Text,
@@ -63,7 +63,7 @@ func (c *collectorClient) SendMeasures() {
         if err != nil {
 		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", stream, err, nil)
 	}
-	log.Printf("Route summary: %v", reply)
+	log.Printf("Conversation summary: %d questions in %d seconds", reply.MeasureCount, reply.ElapsedTime)
 }
 
 func (c *collectorClient) Close() {
