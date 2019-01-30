@@ -9,7 +9,7 @@ import (
 
         "google.golang.org/grpc"
 
-        pb "github.com/luanguimaraesla/memoir/metricsgateway"
+        pb "github.com/luanguimaraesla/memoir/metrics"
         "github.com/luanguimaraesla/memoir/model"
 )
 
@@ -18,7 +18,7 @@ type nextMeasureFunc func() chan *model.Measure
 type collectorClient struct {
         Addr string
         cf nextMeasureFunc
-        cc pb.MetricsGatewayClient
+        cc pb.MetricsClient
         conn *grpc.ClientConn
 }
 
@@ -27,7 +27,7 @@ type CollectorClient interface {
         Close()
 }
 
-var mmt = map[string]pb.Measure_MetricType{
+var mmt = map[string]pb.Measure_Type{
         "gauge": pb.Measure_GAUGE,
         "counter": pb.Measure_COUNTER,
         "histogram": pb.Measure_HISTOGRAM,
@@ -39,6 +39,7 @@ func buildArgs(m *model.Measure) *pb.Measure {
                 Name: fmt.Sprintf("%s.%s", m.Reference.Group, m.Reference.Metric),
                 Kind: mmt[strings.ToLower(m.Reference.Kind)],
                 Value: m.Value,
+                Help: m.Reference.Text,
         }
 }
 
@@ -78,7 +79,7 @@ func NewCollectorClient(addr string, collectorFunc nextMeasureFunc) CollectorCli
 
         return &collectorClient{
                 Addr: addr,
-                cc: pb.NewMetricsGatewayClient(conn),
+                cc: pb.NewMetricsClient(conn),
                 cf: collectorFunc,
                 conn: conn,
         }
